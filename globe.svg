@@ -1,48 +1,91 @@
-// Turns a street address into { lat, lng } using OpenStreetMap's free
-// Nominatim geocoder. Used by scripts/seed.mjs and by the admin approve
-// action so every new listing gets map coordinates automatically —
-// nobody should ever have to hand-type latitude/longitude.
-//
-// Nominatim's usage policy (https://operations.osmfoundation.org/policies/nominatim/)
-// caps free use at 1 request/second and requires a real identifying
-// User-Agent. callGeocode() below enforces both. If this directory ever
-// needs to geocode at real volume (thousands of submissions), switch to a
-// paid provider (Mapbox and Google both have geocoding APIs with a free
-// tier) — this function's signature can stay the same either way.
+"use client";
 
-let lastCallAt = 0;
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export async function geocodeAddress(address) {
-  if (!address || !address.trim()) return null;
+const LINKS = [
+  { href: "/", label: "Browse" },
+  { href: "/add", label: "Add a Resource" },
+  { href: "/about", label: "About" },
+];
 
-  // Respect the 1 req/sec limit even if this is called in a tight loop.
-  const elapsed = Date.now() - lastCallAt;
-  if (elapsed < 1100) {
-    await new Promise((r) => setTimeout(r, 1100 - elapsed));
-  }
-  lastCallAt = Date.now();
+export default function Header() {
+  const pathname = usePathname();
 
-  const url =
-    "https://nominatim.openstreetmap.org/search?" +
-    new URLSearchParams({
-      q: address,
-      format: "json",
-      limit: "1",
-      countrycodes: "us",
-    });
-
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "TheHelpNetwork/1.0 (community resource directory; contact via project owner)",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Geocoding request failed (${res.status}) for "${address}"`);
-  }
-
-  const results = await res.json();
-  if (!results.length) return null;
-
-  return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon) };
+  return (
+    <header
+      style={{
+        borderBottom: "1px solid var(--line)",
+        background: "var(--panel)",
+      }}
+    >
+      <div
+        className="shell"
+        style={{
+          paddingTop: 28,
+          paddingBottom: 22,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 20,
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <p
+            style={{
+              fontFamily: '"IBM Plex Mono"',
+              fontSize: 11,
+              letterSpacing: "0.11em",
+              textTransform: "uppercase",
+              color: "var(--teal-dark)",
+              margin: "0 0 6px",
+            }}
+          >
+            Community resource directory
+          </p>
+          <h1 style={{ fontSize: 32, fontWeight: 600 }}>
+            <Link href="/" style={{ color: "var(--ink)", textDecoration: "none" }}>
+              The Help Network
+            </Link>
+          </h1>
+          <p style={{ margin: "6px 0 0", color: "var(--ink-soft)", maxWidth: "46ch", fontSize: 14 }}>
+            A directory of mental health, recovery, shelter, and support resources — for people who
+            need them, and the organizations that provide them. Starting in North Texas.
+          </p>
+        </div>
+        <nav
+          style={{
+            display: "flex",
+            gap: 4,
+            background: "var(--teal-tint)",
+            padding: 4,
+            borderRadius: 10,
+          }}
+        >
+          {LINKS.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                style={{
+                  padding: "9px 16px",
+                  borderRadius: 7,
+                  fontSize: 13.5,
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  color: active ? "var(--ink)" : "var(--teal-dark)",
+                  background: active ? "var(--panel)" : "transparent",
+                  boxShadow: active ? "var(--shadow)" : "none",
+                }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    </header>
+  );
 }

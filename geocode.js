@@ -1,15 +1,25 @@
-// Single source of truth for category metadata — used by the browse page,
-// the submission form, and the seed script. Add a category here once and
-// it shows up everywhere.
-export const CATEGORIES = [
-  { slug: "start-here", label: "Start Here", color: "#1f5f5b", tint: "#e3efed" },
-  { slug: "crisis", label: "Crisis & Mental Health", color: "#a8443a", tint: "#f5e0dd" },
-  { slug: "recovery", label: "Substance Abuse & Recovery", color: "#8a5a2b", tint: "#f2e4d1" },
-  { slug: "domestic-violence", label: "Domestic Violence Support", color: "#8f3a63", tint: "#f2dfe9" },
-  { slug: "shelter", label: "Shelter & Housing", color: "#3f5c7a", tint: "#dee6ef" },
-  { slug: "lgbtq", label: "LGBTQ+ Support", color: "#6a4a9c", tint: "#e6dff3" },
-  { slug: "food", label: "Food Assistance", color: "#3f7057", tint: "#e1ede4" },
-  { slug: "clothing", label: "Clothing & Essentials", color: "#c97a2b", tint: "#f7e6d2" },
-];
+export const metadata = { title: "About — The Help Network" };
 
-export const CATEGORY_BY_SLUG = Object.fromEntries(CATEGORIES.map((c) => [c.slug, c]));
+export default function AboutPage() {
+  return (
+    <div className="panel-block" style={{ maxWidth: 680 }}>
+      <h2 style={{ fontSize: 22, marginBottom: 12 }}>About The Help Network</h2>
+      <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
+        The Help Network is a directory of mental health, substance abuse recovery, shelter, domestic
+        violence, LGBTQ+, food assistance, and clothing/essentials resources. It started in North Texas,
+        with the goal of growing city by city over time.
+      </p>
+      <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
+        Anyone can search the directory for free. Anyone can also submit a resource — including
+        organizations listing themselves directly — and every submission is reviewed before it goes
+        live, to keep listings accurate and to keep bad actors out.
+      </p>
+      <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
+        <strong>This is an informational directory only.</strong> It is not a substitute for
+        professional medical, legal, or crisis care. If you or someone else is in immediate danger,
+        call 911. Listings are community-sourced and reviewed, but hours and eligibility can change —
+        always confirm directly with the organization before you go.
+      </p>
+    </div>
+  );
+}

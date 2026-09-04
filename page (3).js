@@ -1,108 +1,92 @@
-# The Help Network
+import Link from "next/link";
+import { CATEGORIES } from "@/lib/categories";
 
-A directory of mental health, recovery, shelter, domestic violence, LGBTQ+, food assistance, and
-clothing/essentials resources — starting in North Texas, built to expand city by city. Includes a
-real map (Leaflet + free OpenStreetMap tiles), a public "Add a Resource" form for individuals and
-organizations, and an admin review queue so nothing goes live unreviewed.
+// Server Component, no client JS needed: the ZIP box is a plain GET form
+// and the category tiles are plain links — both just navigate to /browse
+// with a query param. Keeping this page this simple is the point: it's a
+// menu, not a filtered list, so there's nothing here that goes stale
+// (no resource counts, no in-place filtering).
+export default function HomePage() {
+  return (
+    <div>
+      <form
+        action="/browse"
+        method="GET"
+        className="panel-block"
+        style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", marginBottom: 28 }}
+      >
+        <div className="field" style={{ flex: "1 1 220px", marginBottom: 0 }}>
+          <label htmlFor="zip">Find resources near you</label>
+          <input
+            id="zip"
+            name="zip"
+            inputMode="numeric"
+            pattern="\d{5}"
+            maxLength={5}
+            placeholder="Enter your ZIP code"
+          />
+        </div>
+        <button className="btn btn-primary" type="submit">
+          Search by ZIP
+        </button>
+      </form>
 
-This replaces the earlier Claude Artifact prototype for the *public* site — that prototype's sandbox
-can't load map tiles from any provider, which is the whole reason this is a real, separately-hosted
-app. The Artifact prototype can still be useful as an internal scratchpad, but this is the real thing.
+      <h2 style={{ fontSize: 18, marginBottom: 14 }}>Browse by category</h2>
 
-## Stack
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gap: 14,
+          marginBottom: 14,
+        }}
+      >
+        {CATEGORIES.map((c) => (
+          <CategoryTile key={c.slug} slug={c.slug} label={c.label} color={c.color} tint={c.tint} />
+        ))}
+      </div>
 
-- **Next.js** (App Router) — the site itself
-- **Supabase** — Postgres database, auth, and row-level security (free tier is plenty to start)
-- **Leaflet + OpenStreetMap** — the map (free, no API key needed)
-- **Vercel** — hosting (free tier)
+      <p style={{ fontSize: 13.5 }}>
+        <Link href="/browse">See every listing at once &rarr;</Link>
+      </p>
+    </div>
+  );
+}
 
-Total cost to get this live: **$0**.
-
-## One-time setup
-
-### 1. Create a Supabase project
-
-1. Go to [supabase.com](https://supabase.com) and create a free account, then a new project.
-2. In the project, open **SQL Editor > New query**, paste in the contents of `supabase/schema.sql`,
-   and run it. This creates the `resources` and `submissions` tables and locks them down with Row
-   Level Security (public can read resources and submit new ones; only a signed-in admin can publish
-   or review).
-3. Go to **Authentication > Users** and add yourself as a user (email + password) — this is the
-   account you'll use to sign in at `/admin` to review submissions.
-4. Go to **Settings > API** and copy three values: the **Project URL**, the **anon public** key, and
-   the **service_role** key.
-
-### 2. Configure this project
-
-```bash
-cp .env.local.example .env.local
-```
-
-Paste the three values from Supabase into `.env.local`.
-
-### 3. Install dependencies and seed real starter data
-
-```bash
-npm install
-npm run seed
-```
-
-`npm run seed` reads `data/dfw-resources.json` (20 real, verified DFW-area resources), geocodes each
-address with OpenStreetMap's free geocoder, and loads them into Supabase. Safe to re-run any time —
-it updates existing rows instead of duplicating them.
-
-### 4. Run it locally
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` to browse the directory and see the map, and
-`http://localhost:3000/admin/login` to sign in and review submissions (there won't be any yet unless
-you submit one yourself at `/add` to test the flow).
-
-### 5. Deploy to Vercel
-
-1. Push this project to a GitHub repo.
-2. Go to [vercel.com](https://vercel.com), create a free account, and import the repo.
-3. In the Vercel project's **Settings > Environment Variables**, add `NEXT_PUBLIC_SUPABASE_URL` and
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (same values as `.env.local`). Do **not** add the service role key
-   here — it's only ever needed for the local seed script.
-4. Deploy. Vercel gives you a live URL immediately; a custom domain can be added later in the same
-   settings page.
-
-## Project structure
-
-```
-app/
-  page.js                  Browse page: search, category filter, map, cards
-  resource/[id]/page.js    One resource's detail page
-  add/page.js              Public "Add a Resource" form (individuals + orgs)
-  about/page.js            About + disclaimer
-  admin/page.js            Review queue (approve/reject submissions)
-  admin/login/page.js      Admin sign-in
-  api/geocode/route.js     Server-side geocoding, used when approving a submission
-components/                Shared UI (map, cards, category rail, header)
-lib/                       Supabase client, category list, geocoding helper
-data/dfw-resources.json    The 20 real seed listings
-scripts/seed.mjs           One-time/repeatable data loader
-supabase/schema.sql        Database schema + Row Level Security policies
-```
-
-## How moderation works
-
-Nothing reaches the public directory without going through `submissions` and an admin approval —
-same model as the original prototype. When you approve a submission on `/admin`, it's geocoded (if it
-has an address) and copied into `resources`, then marked `approved` in `submissions`.
-
-**Not yet built, worth doing before this is truly public:** rate limiting / spam protection on the
-submission form (right now anyone can submit as many times as they want), and a distinct intake for
-organization self-registration vs. an anonymous tip (the form captures which one it is via
-`submitter_type`, but nothing branches on it yet).
-
-## About the data model's extra fields
-
-`resources.urgency_tier` and `resources.stage_of_need` exist in the schema but nothing reads them
-yet — they're there so the planned personalized, day-by-day recovery-guide feature doesn't require a
-schema migration when it's built. See the project plan doc for the reasoning (that feature needs real
-case-management input before it ships — it's not a simple content feature).
+function CategoryTile({ slug, label, color, tint }) {
+  return (
+    <Link
+      href={`/browse?category=${slug}`}
+      className="panel-block"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        padding: "18px 20px",
+        textDecoration: "none",
+        color: "var(--ink)",
+        transition: "transform 0.1s ease",
+      }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          width: 34,
+          height: 34,
+          borderRadius: 9,
+          flex: "none",
+          background: tint,
+          color,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: 700,
+          fontSize: 14,
+        }}
+      >
+        {label.charAt(0)}
+      </span>
+      <span style={{ fontWeight: 500, fontSize: 15 }}>{label}</span>
+    </Link>
+  );
+}

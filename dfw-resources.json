@@ -40,6 +40,7 @@ export default function ResourceCard({ resource, onSelect }) {
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         {resource.hours_247 && <span className="badge urgent">24/7</span>}
         {resource.free && <span className="badge free">Free</span>}
+        {resource.offers_detox && <span className="badge">Detox available</span>}
         {resource.area && <span className="badge">{resource.area}</span>}
       </div>
 

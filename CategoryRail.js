@@ -1,58 +1,91 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { CATEGORIES } from "@/lib/categories";
+import { usePathname } from "next/navigation";
 
-// Compact category switcher for the /browse results page. Deliberately no
-// counts (a number here would just go stale as listings change) and no
-// dropdown/local state — every item is a real link, so clicking one is a
-// normal page navigation that keeps the current ZIP filter intact.
-export default function CategoryRail() {
-  const searchParams = useSearchParams();
-  const activeCat = searchParams.get("category") || "all";
-  const zip = searchParams.get("zip");
+const LINKS = [
+  { href: "/", label: "Browse" },
+  { href: "/add", label: "Add a Resource" },
+  { href: "/about", label: "About" },
+];
 
-  function hrefFor(slug) {
-    const params = new URLSearchParams();
-    if (slug !== "all") params.set("category", slug);
-    if (zip) params.set("zip", zip);
-    const qs = params.toString();
-    return qs ? `/browse?${qs}` : "/browse";
-  }
+export default function Header() {
+  const pathname = usePathname();
 
   return (
-    <div style={{ position: "sticky", top: 16, display: "flex", flexDirection: "column", gap: 2 }}>
-      <RailLink href={hrefFor("all")} label="All resources" active={activeCat === "all"} color="#1f5f5b" />
-      {CATEGORIES.map((c) => (
-        <RailLink key={c.slug} href={hrefFor(c.slug)} label={c.label} active={activeCat === c.slug} color={c.color} />
-      ))}
-    </div>
-  );
-}
-
-function RailLink({ href, label, active, color }) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
+    <header
       style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 9,
-        textAlign: "left",
-        textDecoration: "none",
-        background: active ? "var(--panel)" : "transparent",
-        padding: "8px 10px",
-        borderRadius: 7,
-        color: active ? "var(--ink)" : "var(--ink-soft)",
-        fontWeight: active ? 500 : 400,
-        fontSize: 13.5,
-        boxShadow: active ? "var(--shadow)" : "none",
+        borderBottom: "1px solid var(--line)",
+        background: "var(--panel)",
       }}
     >
-      <span style={{ width: 8, height: 8, borderRadius: "50%", flex: "none", background: color }} />
-      {label}
-    </Link>
+      <div
+        className="shell"
+        style={{
+          paddingTop: 28,
+          paddingBottom: 22,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 20,
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <p
+            style={{
+              fontFamily: '"IBM Plex Mono"',
+              fontSize: 11,
+              letterSpacing: "0.11em",
+              textTransform: "uppercase",
+              color: "var(--teal-dark)",
+              margin: "0 0 6px",
+            }}
+          >
+            Community resource directory
+          </p>
+          <h1 style={{ fontSize: 32, fontWeight: 600 }}>
+            <Link href="/" style={{ color: "var(--ink)", textDecoration: "none" }}>
+              The Help Network
+            </Link>
+          </h1>
+          <p style={{ margin: "6px 0 0", color: "var(--ink-soft)", maxWidth: "46ch", fontSize: 14 }}>
+            A directory of mental health, recovery, shelter, and support resources — for people who
+            need them, and the organizations that provide them. Starting in North Texas.
+          </p>
+        </div>
+        <nav
+          style={{
+            display: "flex",
+            gap: 4,
+            background: "var(--teal-tint)",
+            padding: 4,
+            borderRadius: 10,
+          }}
+        >
+          {LINKS.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                style={{
+                  padding: "9px 16px",
+                  borderRadius: 7,
+                  fontSize: 13.5,
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  color: active ? "var(--ink)" : "var(--teal-dark)",
+                  background: active ? "var(--panel)" : "transparent",
+                  boxShadow: active ? "var(--shadow)" : "none",
+                }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    </header>
   );
 }

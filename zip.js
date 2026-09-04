@@ -1,19 +1,282 @@
-// Pulls a 5-digit US ZIP code out of a free-text street address, e.g.
-// "5300 University Hills Blvd, Dallas, TX 75241" -> "75241". Used both to
-// backfill existing listings and to auto-tag new resources when an admin
-// approves a submission, so nobody has to type a ZIP by hand.
-export function extractZip(address) {
-  if (!address) return "";
-  const match = address.match(/\b(\d{5})(?:-\d{4})?\b/);
-  return match ? match[1] : "";
-}
-
-// Does a resource belong to a given ZIP search? Resources with no street
-// address (national hotlines, or a confidential shelter location) aren't
-// tied to one place, so they always match — a 24/7 crisis line is just as
-// reachable from any ZIP.
-export function matchesZip(resource, zip) {
-  if (!zip) return true;
-  if (!resource.address) return true;
-  return resource.zip === zip;
-}
+[
+  {
+    "slug": "988-lifeline",
+    "name": "988 Suicide & Crisis Lifeline",
+    "category": "crisis",
+    "description": "Free, confidential 24/7 crisis support by call, text, or chat for anyone in suicidal crisis or emotional distress.",
+    "phone": "988",
+    "address": "",
+    "area": "National",
+    "hours": "24/7",
+    "hours247": true,
+    "free": true,
+    "requirements": "None. Call or text 988 from anywhere in the US.",
+    "website": "https://988lifeline.org"
+  },
+  {
+    "slug": "samhsa-helpline",
+    "name": "SAMHSA National Helpline",
+    "category": "crisis",
+    "description": "Free, confidential 24/7 treatment referral and information service for mental health and/or substance use disorders, in English and Spanish.",
+    "phone": "1-800-662-4357",
+    "address": "",
+    "area": "National",
+    "hours": "24/7, 365 days",
+    "hours247": true,
+    "free": true,
+    "requirements": "None.",
+    "website": "https://www.samhsa.gov/find-help/helplines/national-helpline"
+  },
+  {
+    "slug": "211-texas",
+    "name": "211 Texas",
+    "category": "start-here",
+    "description": "Connects Texans to local health and human services of every kind — the best starting point when you don't know where else to look.",
+    "phone": "211",
+    "address": "",
+    "area": "Texas (statewide)",
+    "hours": "24/7",
+    "hours247": true,
+    "free": true,
+    "requirements": "None. Dial 211 or use 211texas.org.",
+    "website": "https://www.211texas.org"
+  },
+  {
+    "slug": "genesis-womens-shelter",
+    "name": "Genesis Women's Shelter & Support",
+    "category": "domestic-violence",
+    "description": "24-hour helpline, emergency shelter, long-term housing, advocacy, counseling, and legal services for women affected by domestic violence.",
+    "phone": "214-946-4357",
+    "address": "",
+    "area": "Dallas, TX",
+    "hours": "24/7 helpline",
+    "hours247": true,
+    "free": true,
+    "requirements": "None to call the helpline. Shelter location is confidential for resident safety.",
+    "website": "https://www.genesisshelter.org"
+  },
+  {
+    "slug": "homeward-bound",
+    "name": "Homeward Bound, Inc.",
+    "category": "recovery",
+    "description": "Detox, residential treatment, outpatient services, and medication-assisted treatment (MAT) for substance use disorders.",
+    "phone": "214-941-3500",
+    "address": "5300 University Hills Blvd, Dallas, TX 75241",
+    "area": "Dallas, TX",
+    "hours": "Lobby hours Mon-Fri 8am-4:30pm; first-come, first-served",
+    "hours247": false,
+    "free": false,
+    "requirements": "Accepts Medicaid, Blue Cross Blue Shield, Molina Healthcare, and uninsured patients.",
+    "website": "https://www.homewardboundinc.org"
+  },
+  {
+    "slug": "salvation-army-carr-p-collins",
+    "name": "Salvation Army — Carr P. Collins Social Service Center",
+    "category": "shelter",
+    "description": "Men's and women's shelter, substance abuse program, food pantry, meals, and life-skills classes.",
+    "phone": "214-424-7000",
+    "address": "5302 Harry Hines Blvd, Dallas, TX 75235",
+    "area": "Dallas, TX",
+    "hours": "Call for current intake hours",
+    "hours247": false,
+    "free": true,
+    "requirements": "Call ahead to confirm current intake process and availability.",
+    "website": "https://salvationarmyntx.org"
+  },
+  {
+    "slug": "salvation-army-mabee",
+    "name": "Salvation Army — Mabee Social Service Center",
+    "category": "shelter",
+    "description": "Emergency family homeless shelter, daily meals for the homeless, and transitional programs.",
+    "phone": "817-344-1800",
+    "address": "1855 E Lancaster Ave, Fort Worth, TX 76103",
+    "area": "Fort Worth, TX",
+    "hours": "Call for current intake hours",
+    "hours247": false,
+    "free": true,
+    "requirements": "Call ahead to confirm current intake process and availability.",
+    "website": "https://salvationarmyntx.org"
+  },
+  {
+    "slug": "salvation-army-arlington",
+    "name": "Salvation Army — Arlington Family Life Shelter",
+    "category": "shelter",
+    "description": "Family shelter with stays up to 14 weeks, job placement skills, and a supportive housing program.",
+    "phone": "817-860-1836",
+    "address": "712 W Abram St, Arlington, TX 76013",
+    "area": "Arlington, TX",
+    "hours": "Call for current intake hours",
+    "hours247": false,
+    "free": true,
+    "requirements": "Call ahead to confirm current intake process and availability.",
+    "website": "https://salvationarmyntx.org"
+  },
+  {
+    "slug": "salvation-army-denton",
+    "name": "Salvation Army — Denton Shelter",
+    "category": "shelter",
+    "description": "Emergency night shelter, food pantry, KARE Kitchen community meal, and a social service center.",
+    "phone": "940-566-3800",
+    "address": "1508 E McKinney St, Denton, TX 76209",
+    "area": "Denton, TX",
+    "hours": "Call for current intake hours",
+    "hours247": false,
+    "free": true,
+    "requirements": "Call ahead to confirm current intake process and availability.",
+    "website": "https://salvationarmyntx.org"
+  },
+  {
+    "slug": "resource-center-dallas",
+    "name": "Resource Center Dallas",
+    "category": "lgbtq",
+    "description": "Mental healthcare, support groups, HIV/STI testing, PrEP care, and hormone therapy services for the LGBTQIA+ community.",
+    "phone": "214-521-5124",
+    "address": "5750 Cedar Springs Rd, Dallas, TX 75235",
+    "area": "Dallas, TX",
+    "hours": "Mon-Fri 9am-5pm",
+    "hours247": false,
+    "free": false,
+    "requirements": "Call to schedule; some services are free or sliding-scale.",
+    "website": "https://myresourcecenter.org"
+  },
+  {
+    "slug": "help-center-fw",
+    "name": "HELP Center for LGBTQ+ Health",
+    "category": "lgbtq",
+    "description": "Free HIV/STI testing and prevention, PrEP/PEP telehealth, and counseling regardless of income or insurance status.",
+    "phone": "817-332-7722",
+    "address": "1919 8th Ave, Fort Worth, TX 76110",
+    "area": "Fort Worth, TX",
+    "hours": "Call for current hours",
+    "hours247": false,
+    "free": true,
+    "requirements": "None — services provided regardless of income or insurance status.",
+    "website": "https://helpcentertx.org"
+  },
+  {
+    "slug": "ntfb",
+    "name": "North Texas Food Bank",
+    "category": "food",
+    "description": "Food pantry locator and SNAP application assistance for North Texas households.",
+    "phone": "214-330-1396",
+    "address": "3677 Mapleshade Ln, Plano, TX 75075",
+    "area": "North Texas (multi-county)",
+    "hours": "Mon-Fri 8:30am-4:30pm, Sat 8:30am-3:30pm",
+    "hours247": false,
+    "free": true,
+    "requirements": "Use the pantry locator to find your nearest partner pantry; call ahead to confirm hours.",
+    "website": "https://ntfb.org"
+  },
+  {
+    "slug": "tafb",
+    "name": "Tarrant Area Food Bank",
+    "category": "food",
+    "description": "Food pantry locator, SNAP assistance, and senior box program for Tarrant County.",
+    "phone": "817-857-7100",
+    "address": "2600 Cullen St, Fort Worth, TX 76107",
+    "area": "Tarrant County, TX",
+    "hours": "Call for current hours",
+    "hours247": false,
+    "free": true,
+    "requirements": "Use the pantry locator to find your nearest partner pantry; call ahead to confirm hours.",
+    "website": "https://tafb.org"
+  },
+  {
+    "slug": "minnies-food-pantry",
+    "name": "Minnie's Food Pantry",
+    "category": "food",
+    "description": "Drive-thru food pantry — no income test, no interview. Homeless individuals may visit weekly on foot.",
+    "phone": "972-596-0253",
+    "address": "661 18th St, Plano, TX 75074",
+    "area": "Plano, TX",
+    "hours": "Wed-Sat 8:30am-11:30am (closed every 5th Saturday)",
+    "hours247": false,
+    "free": true,
+    "requirements": "Bring a photo ID and a utility bill. Households may visit once a month via drive-thru; homeless individuals may visit weekly on foot.",
+    "website": "https://minniesfoodpantry.org"
+  },
+  {
+    "slug": "mission-arlington",
+    "name": "Mission Arlington",
+    "category": "food",
+    "description": "Emergency food assistance and a wide range of family support services, six days a week.",
+    "phone": "817-277-6620",
+    "address": "210 W South St, Arlington, TX 76010",
+    "area": "Arlington, TX",
+    "hours": "Mon-Sat 7am-7pm (drop-off); emergency assistance Mon-Fri 8am-5pm, Sat 9am-2pm",
+    "hours247": false,
+    "free": true,
+    "requirements": "No income test stated. Families receive 3-5 days of food based on family size.",
+    "website": "https://missionarlington.org"
+  },
+  {
+    "slug": "metrocrest-services",
+    "name": "Metrocrest Services",
+    "category": "food",
+    "description": "Choice food pantry serving Carrollton, Addison, Farmers Branch, Coppell, and part of Dallas.",
+    "phone": "972-446-2100",
+    "address": "1145 N Josey Ln, Carrollton, TX 75006",
+    "area": "Carrollton, TX",
+    "hours": "Mon-Fri 8:30am-3pm, Sat 9am-1pm",
+    "hours247": false,
+    "free": true,
+    "requirements": "Appointment required. No proof needed if already on SNAP/TANF/SSI or income under federal poverty guidelines; homelessness and disaster survivors auto-qualify. Provides ~14 days of food per visit.",
+    "website": "https://metrocrestservices.org"
+  },
+  {
+    "slug": "mckinney-food-pantry",
+    "name": "Community Food Pantry of McKinney",
+    "category": "food",
+    "description": "Choice pantry where families shop for their own groceries in a welcoming space.",
+    "phone": "972-547-4404",
+    "address": "307 Smith St, McKinney, TX 75069",
+    "area": "McKinney, TX",
+    "hours": "Mon-Wed 11am-3:30pm, Thu 11am-6:30pm, Fri 10am-12:30pm",
+    "hours247": false,
+    "free": true,
+    "requirements": "Address and family size info; income eligibility per North Texas Food Bank guidelines; must reside in McKinney or surrounding area. Weekly visits allowed.",
+    "website": "https://www.mckinneyfoodpantry.org"
+  },
+  {
+    "slug": "denton-community-food-center",
+    "name": "Denton Community Food Center",
+    "category": "food",
+    "description": "Appointment-based pantry where clients individually select their own items with volunteer help.",
+    "phone": "940-382-0807",
+    "address": "306 N Loop 288, Denton, TX 76209",
+    "area": "Denton, TX",
+    "hours": "Mon 10:30am-12:15pm; Wed 10:30am-12:15pm (appointment only)",
+    "hours247": false,
+    "free": true,
+    "requirements": "Appointment required (register at app.pantrysoft.com/login/denton). Valid ID (passport, SNAP card, or green card OK) and proof of address in Denton or northern Denton County. Once a month, up to 12 visits per year.",
+    "website": "https://www.dentoncfc.org"
+  },
+  {
+    "slug": "citysquare-food-pantry",
+    "name": "CitySquare Opportunity Center Food Pantry",
+    "category": "food",
+    "description": "Walk-up food pantry with a number-based queue system, plus benefits assistance.",
+    "phone": "214-823-8710",
+    "address": "1610 S Malcolm X Blvd, Dallas, TX 75226",
+    "area": "Dallas, TX",
+    "hours": "Tue-Fri 9am-3pm (closed noon-1pm for restocking)",
+    "hours247": false,
+    "free": true,
+    "requirements": "Bring a photo ID. Walk up and wait for your number to be called.",
+    "website": "https://www.citysquare.org"
+  },
+  {
+    "slug": "union-gospel-mission-tarrant",
+    "name": "Union Gospel Mission of Tarrant County",
+    "category": "clothing",
+    "description": "Clothing, hygiene items, bedding, and household essentials for people in need.",
+    "phone": "817-339-2553",
+    "address": "1321 E Lancaster Ave, Fort Worth, TX 76102",
+    "area": "Fort Worth, TX",
+    "hours": "Mon-Fri 9am-4pm",
+    "hours247": false,
+    "free": true,
+    "requirements": "Call ahead to confirm current distribution process.",
+    "website": "https://ugm-tc.org"
+  }
+]

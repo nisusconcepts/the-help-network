@@ -1,48 +1,15 @@
-// Turns a street address into { lat, lng } using OpenStreetMap's free
-// Nominatim geocoder. Used by scripts/seed.mjs and by the admin approve
-// action so every new listing gets map coordinates automatically —
-// nobody should ever have to hand-type latitude/longitude.
-//
-// Nominatim's usage policy (https://operations.osmfoundation.org/policies/nominatim/)
-// caps free use at 1 request/second and requires a real identifying
-// User-Agent. callGeocode() below enforces both. If this directory ever
-// needs to geocode at real volume (thousands of submissions), switch to a
-// paid provider (Mapbox and Google both have geocoding APIs with a free
-// tier) — this function's signature can stay the same either way.
+// Single source of truth for category metadata — used by the browse page,
+// the submission form, and the seed script. Add a category here once and
+// it shows up everywhere.
+export const CATEGORIES = [
+  { slug: "start-here", label: "Start Here", color: "#1f5f5b", tint: "#e3efed" },
+  { slug: "crisis", label: "Crisis & Mental Health", color: "#a8443a", tint: "#f5e0dd" },
+  { slug: "recovery", label: "Substance Abuse & Recovery", color: "#8a5a2b", tint: "#f2e4d1" },
+  { slug: "domestic-violence", label: "Domestic Violence Support", color: "#8f3a63", tint: "#f2dfe9" },
+  { slug: "shelter", label: "Shelter & Housing", color: "#3f5c7a", tint: "#dee6ef" },
+  { slug: "lgbtq", label: "LGBTQ+ Support", color: "#6a4a9c", tint: "#e6dff3" },
+  { slug: "food", label: "Food Assistance", color: "#3f7057", tint: "#e1ede4" },
+  { slug: "clothing", label: "Clothing & Essentials", color: "#c97a2b", tint: "#f7e6d2" },
+];
 
-let lastCallAt = 0;
-
-export async function geocodeAddress(address) {
-  if (!address || !address.trim()) return null;
-
-  // Respect the 1 req/sec limit even if this is called in a tight loop.
-  const elapsed = Date.now() - lastCallAt;
-  if (elapsed < 1100) {
-    await new Promise((r) => setTimeout(r, 1100 - elapsed));
-  }
-  lastCallAt = Date.now();
-
-  const url =
-    "https://nominatim.openstreetmap.org/search?" +
-    new URLSearchParams({
-      q: address,
-      format: "json",
-      limit: "1",
-      countrycodes: "us",
-    });
-
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "TheHelpNetwork/1.0 (community resource directory; contact via project owner)",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Geocoding request failed (${res.status}) for "${address}"`);
-  }
-
-  const results = await res.json();
-  if (!results.length) return null;
-
-  return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon) };
-}
+export const CATEGORY_BY_SLUG = Object.fromEntries(CATEGORIES.map((c) => [c.slug, c]));

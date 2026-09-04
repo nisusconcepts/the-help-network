@@ -1,164 +1,108 @@
-"use client";
+# The Help Network
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { CATEGORIES } from "@/lib/categories";
+A directory of mental health, recovery, shelter, domestic violence, LGBTQ+, food assistance, and
+clothing/essentials resources — starting in North Texas, built to expand city by city. Includes a
+real map (Leaflet + free OpenStreetMap tiles), a public "Add a Resource" form for individuals and
+organizations, and an admin review queue so nothing goes live unreviewed.
 
-const EMPTY_FORM = {
-  submitter_type: "individual",
-  name: "",
-  category: CATEGORIES[1]?.slug || CATEGORIES[0].slug,
-  description: "",
-  phone: "",
-  area: "",
-  address: "",
-  hours: "",
-  requirements: "",
-  website: "",
-  note: "",
-};
+This replaces the earlier Claude Artifact prototype for the *public* site — that prototype's sandbox
+can't load map tiles from any provider, which is the whole reason this is a real, separately-hosted
+app. The Artifact prototype can still be useful as an internal scratchpad, but this is the real thing.
 
-export default function AddResourcePage() {
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [status, setStatus] = useState(null); // { type: 'ok' | 'err', message }
-  const [submitting, setSubmitting] = useState(false);
+## Stack
 
-  function update(field, value) {
-    setForm((f) => ({ ...f, [field]: value }));
-  }
+- **Next.js** (App Router) — the site itself
+- **Supabase** — Postgres database, auth, and row-level security (free tier is plenty to start)
+- **Leaflet + OpenStreetMap** — the map (free, no API key needed)
+- **Vercel** — hosting (free tier)
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setSubmitting(true);
-    setStatus(null);
+Total cost to get this live: **$0**.
 
-    const { error } = await supabase.from("submissions").insert({
-      ...form,
-      status: "pending",
-    });
+## One-time setup
 
-    setSubmitting(false);
-    if (error) {
-      setStatus({ type: "err", message: `Something went wrong (${error.message}). Please try again.` });
-    } else {
-      setStatus({ type: "ok", message: "Thanks — this will be reviewed before it appears in the directory." });
-      setForm(EMPTY_FORM);
-    }
-  }
+### 1. Create a Supabase project
 
-  return (
-    <div className="panel-block" style={{ maxWidth: 640 }}>
-      <h2 style={{ fontSize: 22, marginBottom: 6 }}>Add a resource</h2>
-      <p style={{ color: "var(--ink-soft)", margin: "0 0 20px", fontSize: 13.5 }}>
-        Know a service that should be listed — or run one yourself? Organizations are welcome to add
-        their own listing directly. Every submission is reviewed before it goes live, which keeps the
-        directory accurate and safe.
-      </p>
+1. Go to [supabase.com](https://supabase.com) and create a free account, then a new project.
+2. In the project, open **SQL Editor > New query**, paste in the contents of `supabase/schema.sql`,
+   and run it. This creates the `resources` and `submissions` tables and locks them down with Row
+   Level Security (public can read resources and submit new ones; only a signed-in admin can publish
+   or review).
+3. Go to **Authentication > Users** and add yourself as a user (email + password) — this is the
+   account you'll use to sign in at `/admin` to review submissions.
+4. Go to **Settings > API** and copy three values: the **Project URL**, the **anon public** key, and
+   the **service_role** key.
 
-      <form onSubmit={handleSubmit}>
-        <div className="field">
-          <label>Who&apos;s submitting this?</label>
-          <div style={{ display: "flex", gap: 16, fontSize: 14 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
-              <input
-                type="radio"
-                name="submitter_type"
-                checked={form.submitter_type === "individual"}
-                onChange={() => update("submitter_type", "individual")}
-              />
-              I found this resource
-            </label>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
-              <input
-                type="radio"
-                name="submitter_type"
-                checked={form.submitter_type === "organization"}
-                onChange={() => update("submitter_type", "organization")}
-              />
-              I represent this organization
-            </label>
-          </div>
-        </div>
+### 2. Configure this project
 
-        <div className="field">
-          <label htmlFor="s-name">Organization name</label>
-          <input id="s-name" required value={form.name} onChange={(e) => update("name", e.target.value)} />
-        </div>
+```bash
+cp .env.local.example .env.local
+```
 
-        <div className="field">
-          <label htmlFor="s-category">Category</label>
-          <select id="s-category" required value={form.category} onChange={(e) => update("category", e.target.value)}>
-            {CATEGORIES.filter((c) => c.slug !== "start-here").map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
+Paste the three values from Supabase into `.env.local`.
 
-        <div className="field">
-          <label htmlFor="s-desc">What do they help with?</label>
-          <textarea
-            id="s-desc"
-            required
-            placeholder="Short description of services offered"
-            value={form.description}
-            onChange={(e) => update("description", e.target.value)}
-          />
-        </div>
+### 3. Install dependencies and seed real starter data
 
-        <div className="field two">
-          <div>
-            <label htmlFor="s-phone">Phone</label>
-            <input id="s-phone" type="tel" placeholder="(xxx) xxx-xxxx" value={form.phone} onChange={(e) => update("phone", e.target.value)} />
-          </div>
-          <div>
-            <label htmlFor="s-area">City / region</label>
-            <input id="s-area" placeholder="e.g. Fort Worth, TX" value={form.area} onChange={(e) => update("area", e.target.value)} />
-          </div>
-        </div>
+```bash
+npm install
+npm run seed
+```
 
-        <div className="field">
-          <label htmlFor="s-address">Address</label>
-          <input id="s-address" placeholder="Street, city, ZIP" value={form.address} onChange={(e) => update("address", e.target.value)} />
-        </div>
+`npm run seed` reads `data/dfw-resources.json` (20 real, verified DFW-area resources), geocodes each
+address with OpenStreetMap's free geocoder, and loads them into Supabase. Safe to re-run any time —
+it updates existing rows instead of duplicating them.
 
-        <div className="field">
-          <label htmlFor="s-hours">Hours / days open</label>
-          <input
-            id="s-hours"
-            placeholder="e.g. Mon-Fri 9am-3pm, closed Sun"
-            value={form.hours}
-            onChange={(e) => update("hours", e.target.value)}
-          />
-        </div>
+### 4. Run it locally
 
-        <div className="field">
-          <label htmlFor="s-requirements">Requirements to receive services (optional)</label>
-          <textarea
-            id="s-requirements"
-            placeholder="e.g. photo ID, proof of address, appointment needed, income limits"
-            value={form.requirements}
-            onChange={(e) => update("requirements", e.target.value)}
-          />
-        </div>
+```bash
+npm run dev
+```
 
-        <div className="field">
-          <label htmlFor="s-website">Website (optional)</label>
-          <input id="s-website" type="url" placeholder="https://" value={form.website} onChange={(e) => update("website", e.target.value)} />
-        </div>
+Visit `http://localhost:3000` to browse the directory and see the map, and
+`http://localhost:3000/admin/login` to sign in and review submissions (there won't be any yet unless
+you submit one yourself at `/add` to test the flow).
 
-        <div className="field">
-          <label htmlFor="s-note">Anything else the reviewer should know? (optional)</label>
-          <textarea id="s-note" value={form.note} onChange={(e) => update("note", e.target.value)} />
-        </div>
+### 5. Deploy to Vercel
 
-        <button className="btn btn-primary" type="submit" disabled={submitting}>
-          {submitting ? "Submitting…" : "Submit for review"}
-        </button>
+1. Push this project to a GitHub repo.
+2. Go to [vercel.com](https://vercel.com), create a free account, and import the repo.
+3. In the Vercel project's **Settings > Environment Variables**, add `NEXT_PUBLIC_SUPABASE_URL` and
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (same values as `.env.local`). Do **not** add the service role key
+   here — it's only ever needed for the local seed script.
+4. Deploy. Vercel gives you a live URL immediately; a custom domain can be added later in the same
+   settings page.
 
-        {status && <div className={`form-msg ${status.type === "ok" ? "ok" : "err"}`}>{status.message}</div>}
-      </form>
-    </div>
-  );
-}
+## Project structure
+
+```
+app/
+  page.js                  Browse page: search, category filter, map, cards
+  resource/[id]/page.js    One resource's detail page
+  add/page.js              Public "Add a Resource" form (individuals + orgs)
+  about/page.js            About + disclaimer
+  admin/page.js            Review queue (approve/reject submissions)
+  admin/login/page.js      Admin sign-in
+  api/geocode/route.js     Server-side geocoding, used when approving a submission
+components/                Shared UI (map, cards, category rail, header)
+lib/                       Supabase client, category list, geocoding helper
+data/dfw-resources.json    The 20 real seed listings
+scripts/seed.mjs           One-time/repeatable data loader
+supabase/schema.sql        Database schema + Row Level Security policies
+```
+
+## How moderation works
+
+Nothing reaches the public directory without going through `submissions` and an admin approval —
+same model as the original prototype. When you approve a submission on `/admin`, it's geocoded (if it
+has an address) and copied into `resources`, then marked `approved` in `submissions`.
+
+**Not yet built, worth doing before this is truly public:** rate limiting / spam protection on the
+submission form (right now anyone can submit as many times as they want), and a distinct intake for
+organization self-registration vs. an anonymous tip (the form captures which one it is via
+`submitter_type`, but nothing branches on it yet).
+
+## About the data model's extra fields
+
+`resources.urgency_tier` and `resources.stage_of_need` exist in the schema but nothing reads them
+yet — they're there so the planned personalized, day-by-day recovery-guide feature doesn't require a
+schema migration when it's built. See the project plan doc for the reasoning (that feature needs real
+case-management input before it ships — it's not a simple content feature).

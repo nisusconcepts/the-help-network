@@ -1,25 +1,52 @@
-export const metadata = { title: "About — The Help Network" };
+"use client";
 
-export default function AboutPage() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+
+export default function AdminLoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      router.push("/admin");
+    }
+  }
+
   return (
-    <div className="panel-block" style={{ maxWidth: 680 }}>
-      <h2 style={{ fontSize: 22, marginBottom: 12 }}>About The Help Network</h2>
-      <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
-        The Help Network is a directory of mental health, substance abuse recovery, shelter, domestic
-        violence, LGBTQ+, food assistance, and clothing/essentials resources. It started in North Texas,
-        with the goal of growing city by city over time.
+    <div className="panel-block" style={{ maxWidth: 380 }}>
+      <h2 style={{ fontSize: 20, marginBottom: 6 }}>Admin sign in</h2>
+      <p style={{ color: "var(--ink-soft)", fontSize: 13, marginBottom: 18 }}>
+        This is the review-queue login — create your account in the Supabase dashboard first (see
+        README.md), then sign in here.
       </p>
-      <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
-        Anyone can search the directory for free. Anyone can also submit a resource — including
-        organizations listing themselves directly — and every submission is reviewed before it goes
-        live, to keep listings accurate and to keep bad actors out.
-      </p>
-      <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
-        <strong>This is an informational directory only.</strong> It is not a substitute for
-        professional medical, legal, or crisis care. If you or someone else is in immediate danger,
-        call 911. Listings are community-sourced and reviewed, but hours and eligibility can change —
-        always confirm directly with the organization before you go.
-      </p>
+      <form onSubmit={handleSubmit}>
+        <div className="field">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
+        <button className="btn btn-primary" type="submit" disabled={loading}>
+          {loading ? "Signing in…" : "Sign in"}
+        </button>
+        {error && <div className="form-msg err">{error}</div>}
+      </form>
     </div>
   );
 }

@@ -1,1 +1,18 @@
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  // Don't crash the build if env vars are missing (e.g. during local setup) —
+  // just make it obvious at runtime instead of failing silently.
+  console.warn(
+    "Supabase env vars are missing. Copy .env.local.example to .env.local and fill in your project's URL and anon key."
+  );
+}
+
+// Browser/client-safe client — uses the public anon key, which is safe to
+// expose because every table it can touch is protected by Row Level
+// Security policies (see supabase/schema.sql). Never put the service_role
+// key in this file or anywhere that ships to the browser.
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

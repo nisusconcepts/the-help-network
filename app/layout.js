@@ -2,9 +2,9 @@ import "./globals.css";
 import Header from "@/components/Header";
 
 export const metadata = {
-  title: "The Help Network",
+  title: "Help Haven",
   description:
-    "A directory of mental health, recovery, shelter, and support resources for North Texas, open for organizations to list themselves.",
+    "A directory of mental health, recovery, shelter, and support resources — starting in North Texas, built to grow nationwide — open for organizations to list themselves.",
 };
 
 export default function RootLayout({ children }) {

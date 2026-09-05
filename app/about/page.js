@@ -1,13 +1,14 @@
-export const metadata = { title: "About — The Help Network" };
+export const metadata = { title: "About — Help Haven" };
 
 export default function AboutPage() {
   return (
     <div className="panel-block" style={{ maxWidth: 680 }}>
-      <h2 style={{ fontSize: 22, marginBottom: 12 }}>About The Help Network</h2>
+      <h2 style={{ fontSize: 22, marginBottom: 12 }}>About Help Haven</h2>
       <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
-        The Help Network is a directory of mental health, substance abuse recovery, shelter, domestic
-        violence, LGBTQ+, food assistance, and clothing/essentials resources. It started in North Texas,
-        with the goal of growing city by city over time.
+        Help Haven is a directory of mental health, substance abuse recovery, shelter, domestic
+        violence, LGBTQ+, military and first responder, legal aid, financial assistance, human
+        trafficking, food assistance, and clothing/essentials resources. It started in North Texas,
+        with the goal of growing city by city — and eventually nationwide.
       </p>
       <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
         Anyone can search the directory for free. Anyone can also submit a resource — including
@@ -23,4 +24,3 @@ export default function AboutPage() {
     </div>
   );
 }
-

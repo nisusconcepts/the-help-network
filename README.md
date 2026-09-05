@@ -1,7 +1,8 @@
-# The Help Network
+# Help Haven
 
-A directory of mental health, recovery, shelter, domestic violence, LGBTQ+, food assistance, and
-clothing/essentials resources — starting in North Texas, built to expand city by city. Includes a
+A directory of mental health, recovery, shelter, domestic violence, LGBTQ+, military and first
+responder, support groups, legal aid, financial assistance, human trafficking, food assistance, and
+clothing/essentials resources — starting in North Texas, built to expand nationwide. Includes a
 real map (Leaflet + free OpenStreetMap tiles), a public "Add a Resource" form for individuals and
 organizations, and an admin review queue so nothing goes live unreviewed.
 

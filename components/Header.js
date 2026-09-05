@@ -46,7 +46,7 @@ export default function Header() {
           </p>
           <h1 style={{ fontSize: 32, fontWeight: 600 }}>
             <Link href="/" style={{ color: "var(--ink)", textDecoration: "none" }}>
-              Help Haven
+              Reslo
             </Link>
           </h1>
           <p style={{ margin: "6px 0 0", color: "var(--ink-soft)", maxWidth: "46ch", fontSize: 14 }}>

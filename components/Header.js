@@ -46,12 +46,12 @@ export default function Header() {
           </p>
           <h1 style={{ fontSize: 32, fontWeight: 600 }}>
             <Link href="/" style={{ color: "var(--ink)", textDecoration: "none" }}>
-              The Help Network
+              Help Haven
             </Link>
           </h1>
           <p style={{ margin: "6px 0 0", color: "var(--ink-soft)", maxWidth: "46ch", fontSize: 14 }}>
             A directory of mental health, recovery, shelter, and support resources — for people who
-            need them, and the organizations that provide them. Starting in North Texas.
+            need them, and the organizations that provide them. Starting in North Texas, growing nationwide.
           </p>
         </div>
         <nav
@@ -89,4 +89,3 @@ export default function Header() {
     </header>
   );
 }
-

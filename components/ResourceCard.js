@@ -38,6 +38,11 @@ export default function ResourceCard({ resource, onSelect }) {
       </p>
 
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        {resource.verified && (
+          <span className="badge" style={{ background: "var(--sage-tint)", color: "var(--sage)" }} title="Confirmed against the organization's own website">
+            ✓ Verified
+          </span>
+        )}
         {resource.hours_247 && <span className="badge urgent">24/7</span>}
         {resource.free && <span className="badge free">Free</span>}
         {resource.offers_detox && <span className="badge">Detox available</span>}
@@ -79,4 +84,3 @@ export default function ResourceCard({ resource, onSelect }) {
     </article>
   );
 }
-

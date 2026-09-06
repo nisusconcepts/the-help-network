@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/categories";
+import AdBanner from "@/components/AdBanner";
 
 // Server Component, no client JS needed: the ZIP box is a plain GET form
 // and the category tiles are plain links — both just navigate to /browse
@@ -9,6 +10,8 @@ import { CATEGORIES } from "@/lib/categories";
 export default function HomePage() {
   return (
     <div>
+      <AdBanner />
+
       <form
         action="/browse"
         method="GET"

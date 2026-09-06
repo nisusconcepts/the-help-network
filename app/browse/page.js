@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { matchesZip, ZIP_SEARCH_RADIUS_MILES } from "@/lib/zip";
 import CategoryRail from "@/components/CategoryRail";
 import ResourceCard from "@/components/ResourceCard";
+import AdBanner from "@/components/AdBanner";
 
 // ssr:false is only legal inside a Client Component — this file is one
 // ("use client" above) precisely so the map can be loaded this way.
@@ -128,6 +129,8 @@ function BrowseResults() {
 
   return (
     <div>
+      <AdBanner />
+
       <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
         <input
           type="search"

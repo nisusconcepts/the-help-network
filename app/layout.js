@@ -1,3 +1,4 @@
+import Link from "next/link";
 import "./globals.css";
 import Header from "@/components/Header";
 
@@ -23,10 +24,14 @@ export default function RootLayout({ children }) {
       <body>
         <Header />
         <main className="shell">{children}</main>
-        <footer className="shell" style={{ paddingTop: 24, color: "var(--ink-soft)", fontSize: 12 }}>
+        <footer className="shell" style={{ paddingTop: 24, paddingBottom: 24, color: "var(--ink-soft)", fontSize: 12 }}>
           Informational directory only — not a substitute for professional medical, legal, or crisis
           care. If you or someone else is in immediate danger, call 911. Listings are community-sourced
           and reviewed, but always confirm hours and eligibility directly with the organization.
+          {" · "}
+          <Link href="/admin" style={{ color: "var(--ink-soft)" }}>
+            Admin
+          </Link>
         </footer>
       </body>
     </html>

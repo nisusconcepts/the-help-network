@@ -1,11 +1,11 @@
-export const metadata = { title: "About — Reslo" };
+export const metadata = { title: "About — The Help Haven Network" };
 
 export default function AboutPage() {
   return (
     <div className="panel-block" style={{ maxWidth: 680 }}>
-      <h2 style={{ fontSize: 22, marginBottom: 12 }}>About Reslo</h2>
+      <h2 style={{ fontSize: 22, marginBottom: 12 }}>About The Help Haven Network</h2>
       <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
-        Reslo is a directory of mental health, substance abuse recovery, shelter, domestic
+        The Help Haven Network is a directory of mental health, substance abuse recovery, shelter, domestic
         violence, LGBTQ+, military and first responder, legal aid, financial assistance, human
         trafficking, food assistance, and clothing/essentials resources. It started in North Texas,
         with the goal of growing city by city — and eventually nationwide.
@@ -16,7 +16,7 @@ export default function AboutPage() {
         live, to keep listings accurate and to keep bad actors out.
       </p>
       <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
-        Reslo is built for, and by, people who have needed resources like these and had trouble
+        The Help Haven Network is built for, and by, people who have needed resources like these and had trouble
         finding them — and who took hard falls because of that gap. It exists so the next person
         looking doesn&apos;t have to search as hard, or fall as far, to find help.
       </p>

@@ -16,6 +16,11 @@ export default function AboutPage() {
         live, to keep listings accurate and to keep bad actors out.
       </p>
       <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
+        Reslo is built for, and by, people who have needed resources like these and had trouble
+        finding them — and who took hard falls because of that gap. It exists so the next person
+        looking doesn&apos;t have to search as hard, or fall as far, to find help.
+      </p>
+      <p style={{ color: "var(--ink-soft)", lineHeight: 1.6 }}>
         <strong>This is an informational directory only.</strong> It is not a substitute for
         professional medical, legal, or crisis care. If you or someone else is in immediate danger,
         call 911. Listings are community-sourced and reviewed, but hours and eligibility can change —

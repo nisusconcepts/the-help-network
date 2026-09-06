@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import VisitStats from "@/components/VisitStats";
 
 const LINKS = [
   { href: "/", label: "Browse" },
@@ -53,6 +54,7 @@ export default function Header() {
             A directory of mental health, recovery, shelter, and support resources — for people who
             need them, and the organizations that provide them. Starting in North Texas, growing nationwide.
           </p>
+          <VisitStats />
         </div>
         <nav
           style={{

@@ -1,4 +1,4 @@
-# Reslo
+# The Help Haven Network
 
 A directory of mental health, recovery, shelter, domestic violence, LGBTQ+, military and first
 responder, support groups, legal aid, financial assistance, human trafficking, food assistance, and

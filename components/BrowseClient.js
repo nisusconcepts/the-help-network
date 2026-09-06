@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { matchesZip, ZIP_SEARCH_RADIUS_MILES } from "@/lib/zip";
 import CategoryRail from "@/components/CategoryRail";
 import ResourceCard from "@/components/ResourceCard";
-import AdBanner from "@/components/AdBanner";
 
 // ssr:false is only legal inside a Client Component — this file is one
 // ("use client" above) precisely so the map can be loaded this way.
@@ -144,8 +143,6 @@ function BrowseResults({ initialCategory, initialResources }) {
 
   return (
     <div>
-      <AdBanner />
-
       <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
         <input
           type="search"
@@ -207,11 +204,7 @@ function BrowseResults({ initialCategory, initialResources }) {
         </div>
       )}
 
-      <div style={{ marginBottom: 24 }}>
-        <ResourceMap resources={filtered} selectedId={selectedId} onSelect={setSelectedId} />
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 28, alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 28, alignItems: "start", marginBottom: 28 }}>
         <CategoryRail activeCategory={activeCat} zip={zip} />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
           {!loading && filtered.length === 0 && (
@@ -228,7 +221,9 @@ function BrowseResults({ initialCategory, initialResources }) {
           ))}
         </div>
       </div>
+
+      <h3 style={{ fontSize: 15, marginBottom: 10, color: "var(--ink-soft)" }}>Map view</h3>
+      <ResourceMap resources={filtered} selectedId={selectedId} onSelect={setSelectedId} />
     </div>
   );
 }
-

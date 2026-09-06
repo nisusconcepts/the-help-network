@@ -21,6 +21,7 @@ const CATEGORY_ICONS = {
   "financial-assistance": "💵",
   "human-trafficking": "🕊️",
 };
+
 // Server Component: the homepage is just the category nav — a grid of
 // same-size, icon-labeled tiles. Each links straight to its own
 // /browse/[category] page; "All Resources" goes to /browse. Search, ZIP

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { CATEGORIES } from "@/lib/categories";
 
@@ -18,10 +18,22 @@ const EMPTY_FORM = {
   note: "",
 };
 
+// Minimum seconds a real person needs to at least glance at the form before
+// submitting. Bots that fill and submit a form programmatically usually do
+// it in well under a second — this alone weeds out a lot of them with zero
+// cost and no CAPTCHA for real visitors to deal with.
+const MIN_SECONDS_BEFORE_SUBMIT = 3;
+
 export default function AddResourcePage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [status, setStatus] = useState(null); // { type: 'ok' | 'err', message }
   const [submitting, setSubmitting] = useState(false);
+  // Honeypot: a field real visitors never see or fill in, styled off-screen
+  // instead of display:none (some bots skip display:none fields). Anything
+  // that fills it in is a bot — silently pretend success rather than error,
+  // so the bot doesn't learn to leave it blank next time.
+  const [company, setCompany] = useState("");
+  const loadedAtRef = useRef(Date.now());
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -29,6 +41,17 @@ export default function AddResourcePage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    const tooFast = Date.now() - loadedAtRef.current < MIN_SECONDS_BEFORE_SUBMIT * 1000;
+    if (company.trim() || tooFast) {
+      // Looks like a bot. Show the normal success state and reset the form
+      // without ever writing to the database.
+      setStatus({ type: "ok", message: "Thanks — this will be reviewed before it appears in the directory." });
+      setForm(EMPTY_FORM);
+      setCompany("");
+      return;
+    }
+
     setSubmitting(true);
     setStatus(null);
 
@@ -56,6 +79,21 @@ export default function AddResourcePage() {
       </p>
 
       <form onSubmit={handleSubmit}>
+        <div
+          style={{ position: "absolute", left: "-9999px", top: "-9999px" }}
+          aria-hidden="true"
+        >
+          <label htmlFor="s-company">Company</label>
+          <input
+            id="s-company"
+            name="company"
+            tabIndex={-1}
+            autoComplete="off"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+          />
+        </div>
+
         <div className="field">
           <label>Who&apos;s submitting this?</label>
           <div style={{ display: "flex", gap: 16, fontSize: 14 }}>
@@ -162,4 +200,3 @@ export default function AddResourcePage() {
     </div>
   );
 }
-

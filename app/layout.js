@@ -1,32 +1,12 @@
 import Link from "next/link";
 import "./globals.css";
 import Header from "@/components/Header";
-
-const SITE_URL = "https://the-help-network-nisus-concepts.vercel.app";
-const SITE_NAME = "The Help Haven Network";
-const SITE_DESCRIPTION =
-  "A directory of mental health, recovery, shelter, and support resources — starting in North Texas, built to grow nationwide — open for organizations to list themselves.";
+import AdBanner from "@/components/AdBanner";
 
 export const metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: SITE_NAME,
-  description: SITE_DESCRIPTION,
-  // Social preview cards (Facebook/LinkedIn/iMessage via Open Graph, plus
-  // Twitter/X's own tags) — without these, a shared link shows no title,
-  // description, or image, just a bare URL. No logo/image asset exists yet,
-  // so this is text-only for now; add an `images` entry here once one does.
-  openGraph: {
-    title: SITE_NAME,
-    description: SITE_DESCRIPTION,
-    url: SITE_URL,
-    siteName: SITE_NAME,
-    type: "website",
-  },
-  twitter: {
-    card: "summary",
-    title: SITE_NAME,
-    description: SITE_DESCRIPTION,
-  },
+  title: "The Help Haven Network",
+  description:
+    "A directory of mental health, recovery, shelter, and support resources — starting in North Texas, built to grow nationwide — open for organizations to list themselves.",
 };
 
 export default function RootLayout({ children }) {
@@ -43,6 +23,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <AdBanner />
         <Header />
         <main className="shell">{children}</main>
         <footer className="shell" style={{ paddingTop: 24, paddingBottom: 24, color: "var(--ink-soft)", fontSize: 12 }}>

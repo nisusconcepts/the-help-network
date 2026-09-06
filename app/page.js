@@ -59,7 +59,7 @@ export default function HomePage() {
 function CategoryTile({ slug, label, color, tint }) {
   return (
     <Link
-      href={`/browse?category=${slug}`}
+      href={`/browse/${slug}`}
       className="panel-block"
       style={{
         display: "flex",

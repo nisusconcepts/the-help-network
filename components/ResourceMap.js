@@ -9,10 +9,12 @@ import { CATEGORY_BY_SLUG } from "@/lib/categories";
 // a Client Component, because Leaflet touches `window`/`document` at import
 // time and will throw during any server render.
 //
-// Tiles come from CARTO's free "Voyager" basemap (built on OpenStreetMap
-// data, no API key or billing account needed) — a cleaner, less cluttered
-// style than raw OSM tiles. This is the whole reason this app exists outside
-// the Artifact sandbox, which blocks loading tiles from any map provider.
+// Tiles come from the standard OpenStreetMap raster tile server — free, no
+// API key or billing account needed. (Previously used CARTO's "Voyager"
+// basemap for a cleaner look, but CARTO began requiring an API key for that
+// tile endpoint in 2026 and started stamping unauthenticated requests with
+// an "API KEY REQUIRED" watermark — this broke the map for every visitor.
+// Plain OSM tiles are busier-looking but they actually render with no key.)
 // Swap this tile layer for Google Maps later if/when a Maps API key exists.
 
 const DFW_CENTER = [32.85, -97.05];
@@ -87,11 +89,11 @@ export default function ResourceMap({ resources, selectedId, onSelect, center, z
         scrollWheelZoom: false,
       });
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 20,
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        subdomains: "abc",
+        maxZoom: 19,
       }).addTo(map);
 
       mapRef.current = map;
@@ -136,4 +138,3 @@ function escapeHtml(s) {
     "'": "&#39;",
   }[m]));
 }
-

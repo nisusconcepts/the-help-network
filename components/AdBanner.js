@@ -21,8 +21,7 @@ export default function AdBanner() {
         }}
       >
         <span style={{ fontSize: 13, color: "#eef7f5" }}>
-          <strong>Sponsor space available.</strong> This spot is reserved for a community partner — nothing is
-          running here yet.
+          <strong>Sponsor space available.</strong> This spot is reserved for a community partner.
         </span>
         <a
           href="mailto:nisusconcepts@gmail.com?subject=Sponsoring%20The%20Help%20Haven%20Network"

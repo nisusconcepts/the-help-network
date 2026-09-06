@@ -203,3 +203,13 @@ textarea {
   overflow: hidden;
   border: 1px solid var(--line);
 }
+
+/* Homepage category tabs — a little lift on hover so the colorful pills
+   feel clickable, not flat. */
+.category-tab {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.category-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -8px rgba(24, 36, 34, 0.4);
+}

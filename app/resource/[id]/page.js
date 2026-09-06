@@ -52,6 +52,11 @@ export default async function ResourceDetailPage({ params }) {
         <p style={{ color: "var(--ink-soft)", marginTop: 10 }}>{resource.description}</p>
 
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "12px 0" }}>
+          {resource.verified && (
+            <span className="badge" style={{ background: "var(--sage-tint)", color: "var(--sage)" }} title="Confirmed against the organization's own website">
+              ✓ Verified
+            </span>
+          )}
           {resource.hours_247 && <span className="badge urgent">24/7</span>}
           {resource.free && <span className="badge free">Free</span>}
           {resource.area && <span className="badge">{resource.area}</span>}
